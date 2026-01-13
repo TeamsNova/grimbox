@@ -138,10 +138,10 @@ function updateTotal() {
 
 // Purchase function
 function purchase() {
-    // Here you would integrate with YooKassa or other payment system
-    // For now, redirect to Discord
-    alert(`Для оплаты товара "${currentProduct.name}" свяжитесь с нами в Discord`);
-    window.open('https://dsc.gg/grimbox', '_blank');
+    const total = Math.round(currentProduct.price * currentQuantity * (1 - promoDiscount / 100));
+    const label = encodeURIComponent(currentProduct.name);
+    const paymentUrl = `https://yoomoney.ru/to/4100116509999561?sum=${total}&label=${label}&quickpay=shop`;
+    window.open(paymentUrl, '_blank');
 }
 
 // Snow Effect
