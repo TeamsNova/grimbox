@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrimBox - Товар</title>
+    <link rel="icon" href="./assets/images/logo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link rel="stylesheet" href="./assets/css/product.css">
+</head>
+<body>
+    <!-- Snow Effect -->
+    <div class="snow-container" id="snow-container"></div>
+    
+    <!-- Weather Toggle -->
+    <button class="weather-toggle" id="weather-btn" onclick="toggleWeather()">
+        <svg id="snow-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3"/>
+            <path d="M2 12h20M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/>
+            <path d="M4.93 4.93l14.14 14.14M4.93 4.93l2.83 1.41M4.93 4.93l1.41 2.83M19.07 19.07l-2.83-1.41M19.07 19.07l-1.41-2.83"/>
+            <path d="M19.07 4.93L4.93 19.07M19.07 4.93l-2.83 1.41M19.07 4.93l-1.41 2.83M4.93 19.07l2.83-1.41M4.93 19.07l1.41-2.83"/>
+        </svg>
+        <svg id="sun-icon" style="display:none" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+    </button>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="./" class="logo">
+            <img src="./assets/images/logo.jpg" alt="GrimBox">
+            <span>GrimBox</span>
+        </a>
+        <div class="nav-menu">
+            <a href="./index.html#shop" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7.5L12 3L4 7.5M20 7.5V16.5L12 21M20 7.5L12 12M12 21L4 16.5V7.5M12 21V12M4 7.5L12 12"/></svg>
+                Магазин
+            </a>
+            <a href="https://dsc.gg/grimbox" target="_blank" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+                Discord
+            </a>
+        </div>
+    </nav>
+
+    <!-- Product Page -->
+    <section class="product-page">
+        <a href="./#shop" class="back-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Назад в магазин
+        </a>
+        
+        <div class="product-container">
+            <div class="product-gallery">
+                <div class="product-main-image" id="product-image">
+                    <img src="" alt="" id="product-img">
+                </div>
+            </div>
+            
+            <div class="product-details">
+                <div class="product-category" id="product-category">Виртуальный статус</div>
+                <h1 class="product-title" id="product-title">Загрузка...</h1>
+                <p class="product-description" id="product-description"></p>
+                
+                <div class="product-features" id="product-features">
+                    <!-- Features will be loaded dynamically -->
+                </div>
+                
+                <div class="product-pricing">
+                    <div class="price-current" id="product-price">0 ₽</div>
+                    <div class="price-old" id="product-old-price"></div>
+                </div>
+                
+                <div class="purchase-section">
+                    <div class="quantity-selector" id="quantity-section" style="display: none;">
+                        <label>Количество:</label>
+                        <div class="quantity-controls">
+                            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+                            <input type="number" id="quantity" value="1" min="1" max="100">
+                            <button class="qty-btn" onclick="changeQty(1)">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="promo-section">
+                        <label>Промокод:</label>
+                        <div class="promo-input-wrapper">
+                            <input type="text" id="promo-code" placeholder="Введите промокод">
+                            <button class="promo-apply" onclick="applyPromo()">Применить</button>
+                        </div>
+                        <div class="promo-message" id="promo-message"></div>
+                    </div>
+                    
+                    <div class="total-section">
+                        <div class="total-label">Итого:</div>
+                        <div class="total-price" id="total-price">0 ₽</div>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-purchase" onclick="purchase()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        Оплатить
+                    </button>
+                    
+                    <p class="purchase-note">
+                        Приобретая виртуальный товар, вы соглашаетесь с условиями использования сервиса.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p class="footer-copy">© 2025 GrimBox. Все права защищены.</p>
+            <div class="footer-links">
+                <a href="https://dsc.gg/grimbox" target="_blank">Discord</a>
+                <a href="#">Правила</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="./assets/js/product.js"></script>
+</body>
+</html>

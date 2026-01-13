@@ -1,0 +1,176 @@
+// GrimBox - Product Page JavaScript
+
+// Products data (same as main.js)
+const products = [
+    // Виртуальные статусы
+    { id: 1, name: "Winter", desc: "Виртуальный статус с сезонным оформлением и расширенными возможностями", price: 209, oldPrice: 1500, category: "privilege", categoryName: "Виртуальный статус", image: "./assets/images/donate/winter.png" },
+    { id: 2, name: "Custom", desc: "Индивидуальный виртуальный статус с персональными настройками", price: 174, oldPrice: 999, category: "privilege", categoryName: "Виртуальный статус", image: "./assets/images/donate/custom.png" },
+    { id: 3, name: "Grim", desc: "Премиальный виртуальный статус с максимальным набором функций", price: 160, oldPrice: 749, category: "privilege", categoryName: "Виртуальный статус", image: "./assets/images/donate/grim.png" },
+    { id: 4, name: "Legend", desc: "Виртуальный статус с расширенными возможностями", price: 104, oldPrice: 549, category: "privilege", categoryName: "Виртуальный статус", image: "./assets/images/donate/legend.png" },
+    { id: 5, name: "Elite", desc: "Виртуальный статус с базовым набором функций", price: 69, oldPrice: 389, category: "privilege", categoryName: "Виртуальный статус", image: "./assets/images/donate/elite.png" },
+    { id: 6, name: "Phantom", desc: "Виртуальный статус с уникальными визуальными эффектами", price: 39, oldPrice: 199, category: "privilege", categoryName: "Виртуальный статус", image: "./assets/images/donate/phantom.png" },
+    { id: 7, name: "Master", desc: "Виртуальный статус с продвинутым набором команд", price: 27, oldPrice: 149, category: "privilege", categoryName: "Виртуальный статус", image: "./assets/images/donate/master.png" },
+    { id: 8, name: "Hero", desc: "Виртуальный статус начального уровня", price: 13, oldPrice: 59, category: "privilege", categoryName: "Виртуальный статус", image: "./assets/images/donate/hero.png" },
+    // Виртуальные наборы
+    { id: 9, name: "Кейс с Донатом", desc: "Виртуальный набор с случайным содержимым", price: 79, oldPrice: null, category: "keys", categoryName: "Виртуальный набор", image: "./assets/images/keys/donate.png" },
+    { id: 10, name: "Кейс с Супер Донатом", desc: "Виртуальный набор с улучшенным содержимым", price: 209, oldPrice: null, category: "keys", categoryName: "Виртуальный набор", image: "./assets/images/keys/superdonate.png" },
+    { id: 11, name: "Кейс с Гримами", desc: "Виртуальный набор с гарантированным содержимым", price: 104, oldPrice: 149, category: "keys", categoryName: "Виртуальный набор", image: "./assets/images/keys/grimkeys.png" },
+    { id: 12, name: "Кейс Всё или Ничего", desc: "Виртуальный набор с повышенной ценностью", price: 90, oldPrice: 129, category: "keys", categoryName: "Виртуальный набор", image: "./assets/images/keys/all or nothing.png" },
+    // Виртуальные товары
+    { id: 13, name: "Игровая валюта", desc: "Виртуальная валюта для использования на сервере", price: 1, oldPrice: null, category: "other", categoryName: "Виртуальный товар", image: "./assets/images/other/grims.png", hasQuantity: true },
+    { id: 14, name: "Кейс с Титулами", desc: "Виртуальный набор с именными префиксами", price: 39, oldPrice: null, category: "other", categoryName: "Виртуальный набор", image: "./assets/images/keys/tituls.png" }
+];
+
+// Get product ID from URL
+const urlParams = new URLSearchParams(window.location.search);
+const productId = parseInt(urlParams.get('id'));
+
+// Current product
+let currentProduct = null;
+let currentQuantity = 1;
+let promoDiscount = 0;
+
+// Load product
+function loadProduct() {
+    currentProduct = products.find(p => p.id === productId);
+    
+    if (!currentProduct) {
+        window.location.href = './index.html#shop';
+        return;
+    }
+    
+    // Update page title
+    document.title = `GrimBox - ${currentProduct.name}`;
+    
+    // Update product info
+    document.getElementById('product-title').textContent = currentProduct.name;
+    document.getElementById('product-description').textContent = currentProduct.desc;
+    
+    // Update image
+    const img = document.getElementById('product-img');
+    if (currentProduct.image) {
+        img.src = currentProduct.image;
+        img.alt = currentProduct.name;
+    }
+    
+    // Update pricing
+    document.getElementById('product-price').textContent = `${currentProduct.price} ₽`;
+    const oldPriceEl = document.getElementById('product-old-price');
+    if (currentProduct.oldPrice) {
+        oldPriceEl.textContent = `${currentProduct.oldPrice} ₽`;
+    } else {
+        oldPriceEl.style.display = 'none';
+    }
+    
+    // Show quantity selector for items that support it
+    if (currentProduct.hasQuantity) {
+        document.getElementById('quantity-section').style.display = 'block';
+    }
+    
+    // Hide features block
+    document.getElementById('product-features').style.display = 'none';
+    
+    updateTotal();
+}
+
+// Change quantity
+function changeQty(delta) {
+    const input = document.getElementById('quantity');
+    let newVal = parseInt(input.value) + delta;
+    if (newVal < 1) newVal = 1;
+    if (newVal > 1000) newVal = 1000;
+    input.value = newVal;
+    currentQuantity = newVal;
+    updateTotal();
+}
+
+// Handle quantity input change
+document.getElementById('quantity')?.addEventListener('change', function() {
+    let val = parseInt(this.value);
+    if (isNaN(val) || val < 1) val = 1;
+    if (val > 1000) val = 1000;
+    this.value = val;
+    currentQuantity = val;
+    updateTotal();
+});
+
+// Apply promo code
+function applyPromo() {
+    const code = document.getElementById('promo-code').value.trim().toUpperCase();
+    const messageEl = document.getElementById('promo-message');
+    
+    // Example promo codes (you can customize these)
+    const promoCodes = {
+        'GRIMBOX10': 10,
+        'WINTER20': 20,
+        'NEWYEAR': 15
+    };
+    
+    if (promoCodes[code]) {
+        promoDiscount = promoCodes[code];
+        messageEl.textContent = `Промокод применён! Скидка ${promoDiscount}%`;
+        messageEl.className = 'promo-message success';
+    } else if (code === '') {
+        messageEl.textContent = '';
+        promoDiscount = 0;
+    } else {
+        messageEl.textContent = 'Промокод не найден';
+        messageEl.className = 'promo-message error';
+        promoDiscount = 0;
+    }
+    
+    updateTotal();
+}
+
+// Update total price
+function updateTotal() {
+    if (!currentProduct) return;
+    
+    let total = currentProduct.price * currentQuantity;
+    
+    if (promoDiscount > 0) {
+        total = total * (1 - promoDiscount / 100);
+    }
+    
+    total = Math.round(total);
+    document.getElementById('total-price').textContent = `${total} ₽`;
+}
+
+// Purchase function
+function purchase() {
+    // Here you would integrate with YooKassa or other payment system
+    // For now, redirect to Discord
+    alert(`Для оплаты товара "${currentProduct.name}" свяжитесь с нами в Discord`);
+    window.open('https://dsc.gg/grimbox', '_blank');
+}
+
+// Snow Effect
+let snowEnabled = true;
+const snowContainer = document.getElementById('snow-container');
+
+function createSnowflake() {
+    if (!snowEnabled) return;
+    
+    const snowflake = document.createElement('div');
+    snowflake.className = 'snowflake';
+    snowflake.innerHTML = '❄';
+    snowflake.style.left = Math.random() * 100 + '%';
+    snowflake.style.fontSize = (Math.random() * 10 + 8) + 'px';
+    snowflake.style.opacity = Math.random() * 0.6 + 0.2;
+    snowflake.style.animationDuration = (Math.random() * 5 + 5) + 's';
+    
+    snowContainer.appendChild(snowflake);
+    setTimeout(() => snowflake.remove(), 10000);
+}
+
+setInterval(createSnowflake, 150);
+
+function toggleWeather() {
+    snowEnabled = !snowEnabled;
+    document.getElementById('snow-icon').style.display = snowEnabled ? 'block' : 'none';
+    document.getElementById('sun-icon').style.display = snowEnabled ? 'none' : 'block';
+    if (!snowEnabled) snowContainer.innerHTML = '';
+}
+
+// Init
+loadProduct();
