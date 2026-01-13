@@ -140,7 +140,7 @@ function updateTotal() {
 function purchase() {
     const total = Math.round(currentProduct.price * currentQuantity * (1 - promoDiscount / 100));
     const label = encodeURIComponent(currentProduct.name);
-    const paymentUrl = `https://yoomoney.ru/to/4100116509999561?sum=${total}&label=${label}&quickpay=shop`;
+    const paymentUrl = `https://yoomoney.ru/quickpay/confirm?receiver=4100116509999561&sum=${total}&label=${label}&successURL=`;
     window.open(paymentUrl, '_blank');
 }
 
