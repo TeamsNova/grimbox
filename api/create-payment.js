@@ -22,21 +22,30 @@ export default async function handler(req, res) {
         }
         if (finalPrice < 1) finalPrice = 1;
 
-        const MERCHANT_ID = '69001';
+        const MERCHANT_ID = 69001;
         const API_KEY = 'b5112256c1f3ebc24160b9ef6d0b67b2';
         const orderId = Date.now().toString();
         const nonce = Date.now();
 
-        const requestBody = {
-            shopId: parseInt(MERCHANT_ID),
+        const data = {
+            shopId: MERCHANT_ID,
             nonce: nonce,
-            signature: API_KEY,
             paymentId: orderId,
             i: 36,
             email: 'customer@grimbox.pw',
             ip: req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0] : '127.0.0.1',
             amount: finalPrice,
-            currency: 'RUB',
+            currency: 'RUB'
+        };
+
+        const sortedKeys = Object.keys(data).sort();
+        const values = sortedKeys.map(key => data[key]);
+        const signString = values.join('|');
+        const signature = crypto.createHmac('sha256', API_KEY).update(signString).digest('hex');
+
+        const requestBody = {
+            ...data,
+            signature: signature,
             success_url: 'https://grimbox.pw/success.html',
             failure_url: 'https://grimbox.pw/fail.html',
             notification_url: 'https://grimbox.pw/api/payment-notification',
@@ -63,7 +72,7 @@ export default async function handler(req, res) {
             });
         } else {
             return res.status(400).json({
-                error: apiData.msg || 'Payment creation failed',
+                error: apiData.msg || apiData.message || 'Payment creation failed',
                 details: apiData
             });
         }
