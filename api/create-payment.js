@@ -42,26 +42,18 @@ export default function handler(req, res) {
         const SECRET_KEY_1 = process.env.FREEKASSA_SECRET_1;
         
         // Генерируем уникальный ID заказа
-        const orderId = `${Date.now()}_${productId}_${Math.random().toString(36).substr(2, 9)}`;
+        const orderId = Date.now().toString();
         
-        // Формируем подпись: md5(merchant_id:amount:secret_word_1:currency:order_id)
-        const signString = `${MERCHANT_ID}:${finalPrice}:${SECRET_KEY_1}:RUB:${orderId}`;
+        // Формируем подпись по документации FreeKassa: md5(merchant_id:amount:secret_word_1:order_id)
+        const signString = `${MERCHANT_ID}:${finalPrice}:${SECRET_KEY_1}:${orderId}`;
         const sign = crypto.createHash('md5').update(signString).digest('hex');
 
-        // Формируем URL для оплаты
-        const paymentUrl = new URL('https://pay.freekassa.com/');
-        paymentUrl.searchParams.set('m', MERCHANT_ID);
-        paymentUrl.searchParams.set('oa', finalPrice);
-        paymentUrl.searchParams.set('currency', 'RUB');
-        paymentUrl.searchParams.set('o', orderId);
-        paymentUrl.searchParams.set('s', sign);
-        paymentUrl.searchParams.set('us_nickname', nickname);
-        paymentUrl.searchParams.set('us_product', productId);
-        paymentUrl.searchParams.set('us_productname', productName || productId);
+        // Формируем URL для оплаты (старый формат FreeKassa)
+        const paymentUrl = `https://pay.freekassa.ru/?m=${MERCHANT_ID}&oa=${finalPrice}&o=${orderId}&s=${sign}&us_nickname=${encodeURIComponent(nickname)}&us_product=${productId}`;
 
         return res.status(200).json({
             success: true,
-            paymentUrl: paymentUrl.toString(),
+            paymentUrl: paymentUrl,
             orderId,
             finalPrice,
             discount,
