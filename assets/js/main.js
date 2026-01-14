@@ -113,8 +113,8 @@ renderProducts();
 
 // Intersection Observer for scroll animations
 const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
+    threshold: 0.05,
+    rootMargin: '50px 0px 0px 0px'
 };
 
 const observer = new IntersectionObserver((entries) => {
@@ -130,9 +130,10 @@ const observer = new IntersectionObserver((entries) => {
 }, observerOptions);
 
 function observeElements() {
-    document.querySelectorAll('.scroll-reveal').forEach(el => {
+    document.querySelectorAll('.scroll-reveal:not(.visible)').forEach(el => {
         observer.observe(el);
     });
 }
 
-observeElements();
+// Trigger immediately for elements in view
+setTimeout(() => observeElements(), 100);
