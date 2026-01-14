@@ -257,3 +257,17 @@ function toggleWeather() {
 
 // Init
 loadProduct();
+
+// Fix Russian text
+document.querySelector('.nickname-section label').textContent = 'Ваш никнейм на сервере:';
+document.getElementById('nickname').placeholder = 'Введите никнейм';
+document.querySelector('.promo-section label').textContent = 'Промокод:';
+document.getElementById('promo-code').placeholder = 'Введите промокод';
+document.querySelector('.promo-apply').textContent = 'Применить';
+document.querySelector('.total-label').textContent = 'Итого:';
+document.querySelector('.btn-purchase span, .btn-purchase').lastChild.textContent = ' Оплатить';
+document.querySelector('.purchase-note').textContent = 'Приобретая виртуальный товар, вы соглашаетесь с условиями использования сервиса.';
+document.querySelector('.back-link').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Назад в магазин';
+document.querySelectorAll('.nav-link')[0].innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7.5L12 3L4 7.5M20 7.5V16.5L12 21M20 7.5L12 12M12 21L4 16.5V7.5M12 21V12M4 7.5L12 12"/></svg> Магазин';
+document.querySelector('.footer-copy').textContent = '© 2026 GrimBox. Все права защищены.';
+document.querySelectorAll('.footer-links a')[1].textContent = 'Правила';
