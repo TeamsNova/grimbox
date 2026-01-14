@@ -29,25 +29,27 @@ export default async function handler(req, res) {
 
         const sign = crypto.createHash('md5').update(MERCHANT_ID + '|' + nonce + '|' + API_KEY).digest('hex');
 
-        const apiResponse = await fetch('https://api.freekassa.com/v1/orders/create', {
+        const requestBody = {
+            shopId: parseInt(MERCHANT_ID),
+            nonce: nonce,
+            signature: sign,
+            paymentId: orderId,
+            i: 36,
+            email: 'customer@grimbox.pw',
+            ip: req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0] : '127.0.0.1',
+            amount: finalPrice,
+            currency: 'RUB',
+            success_url: 'https://grimbox.pw/success.html',
+            failure_url: 'https://grimbox.pw/fail.html',
+            notification_url: 'https://grimbox.pw/api/payment-notification',
+            us_nickname: nickname,
+            us_product: productId.toString()
+        };
+
+        const apiResponse = await fetch('https://api.fk.life/v1/orders/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                shopId: parseInt(MERCHANT_ID),
-                nonce: nonce,
-                signature: sign,
-                paymentId: orderId,
-                i: 36,
-                email: 'customer@grimbox.pw',
-                ip: req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'].split(',')[0] : '127.0.0.1',
-                amount: finalPrice,
-                currency: 'RUB',
-                success_url: 'https://grimbox.pw/success.html',
-                failure_url: 'https://grimbox.pw/fail.html',
-                notification_url: 'https://grimbox.pw/api/payment-notification',
-                us_nickname: nickname,
-                us_product: productId.toString()
-            })
+            body: JSON.stringify(requestBody)
         });
 
         const apiData = await apiResponse.json();
@@ -62,11 +64,13 @@ export default async function handler(req, res) {
                 originalPrice: price * quantity
             });
         } else {
-            console.error('FreeKassa API error:', apiData);
-            return res.status(400).json({ error: apiData.msg || 'Payment creation failed' });
+            return res.status(400).json({ 
+                error: apiData.msg || 'Payment creation failed',
+                details: apiData,
+                request: requestBody
+            });
         }
     } catch (error) {
-        console.error('Payment creation error:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: error.message });
     }
 }
