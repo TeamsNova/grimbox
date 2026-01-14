@@ -30,7 +30,7 @@ function renderProducts(filter = 'all') {
     const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
     
     grid.innerHTML = filtered.map((p, i) => `
-        <div class="product-card motion-blur" style="animation-delay: ${0.1 + i * 0.08}s">
+        <div class="product-card scroll-reveal" data-delay="${i * 0.06}">
             <div class="product-image">
                 ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<div style="font-size:40px;opacity:0.3">🎁</div>`}
             </div>
@@ -47,6 +47,9 @@ function renderProducts(filter = 'all') {
             </div>
         </div>
     `).join('');
+    
+    // Re-observe new elements
+    observeElements();
 }
 
 // Category filter
@@ -107,3 +110,29 @@ function toggleWeather() {
 
 // Init
 renderProducts();
+
+// Intersection Observer for scroll animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const delay = entry.target.dataset.delay || 0;
+            setTimeout(() => {
+                entry.target.classList.add('visible');
+            }, delay * 1000);
+            observer.unobserve(entry.target);
+        }
+    });
+}, observerOptions);
+
+function observeElements() {
+    document.querySelectorAll('.scroll-reveal').forEach(el => {
+        observer.observe(el);
+    });
+}
+
+observeElements();
