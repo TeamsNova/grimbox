@@ -32,7 +32,7 @@ export default async function handler(req, res) {
             amount: finalPrice,
             currency: 'RUB',
             email: 'customer@grimbox.pw',
-            i: 6,
+            i: 13,
             ip: clientIp,
             nonce: nonce,
             paymentId: orderId,
