@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-// Промокоды (можно потом вынести в базу данных)
+// Промокоды
 const PROMO_CODES = {
     'OPEN15': 15,
 };
@@ -44,12 +44,14 @@ export default function handler(req, res) {
         // Генерируем уникальный ID заказа
         const orderId = Date.now().toString();
         
-        // Формируем подпись по документации FreeKassa: md5(merchant_id:amount:secret_word_1:order_id)
-        const signString = `${MERCHANT_ID}:${finalPrice}:${SECRET_KEY_1}:${orderId}`;
+        // Формируем подпись: md5(merchant_id:amount:secret_word_1:currency:order_id)
+        // Новый формат FreeKassa требует currency в подписи
+        const currency = 'RUB';
+        const signString = `${MERCHANT_ID}:${finalPrice}:${SECRET_KEY_1}:${currency}:${orderId}`;
         const sign = crypto.createHash('md5').update(signString).digest('hex');
 
-        // Формируем URL для оплаты (старый формат FreeKassa)
-        const paymentUrl = `https://pay.freekassa.ru/?m=${MERCHANT_ID}&oa=${finalPrice}&o=${orderId}&s=${sign}&us_nickname=${encodeURIComponent(nickname)}&us_product=${productId}`;
+        // Новый формат URL FreeKassa
+        const paymentUrl = `https://pay.freekassa.com/?m=${MERCHANT_ID}&oa=${finalPrice}&currency=${currency}&o=${orderId}&s=${sign}&us_nickname=${encodeURIComponent(nickname)}&us_product=${productId}&lang=ru`;
 
         return res.status(200).json({
             success: true,
