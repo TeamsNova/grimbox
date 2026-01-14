@@ -27,12 +27,10 @@ export default async function handler(req, res) {
         const orderId = Date.now().toString();
         const nonce = Date.now();
 
-        const sign = crypto.createHash('md5').update(MERCHANT_ID + '|' + nonce + '|' + API_KEY).digest('hex');
-
         const requestBody = {
             shopId: parseInt(MERCHANT_ID),
             nonce: nonce,
-            signature: sign,
+            signature: API_KEY,
             paymentId: orderId,
             i: 36,
             email: 'customer@grimbox.pw',
