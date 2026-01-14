@@ -1,4 +1,4 @@
-﻿const crypto = require('crypto');
+const crypto = require('crypto');
 const PROMO_CODES = { 'OPEN15': 15 };
 
 export default async function handler(req, res) {
@@ -22,8 +22,8 @@ export default async function handler(req, res) {
         }
         if (finalPrice < 1) finalPrice = 1;
 
-        const MERCHANT_ID = process.env.FREEKASSA_MERCHANT_ID;
-        const API_KEY = process.env.FREEKASSA_API_KEY;
+        const MERCHANT_ID = '69001';
+        const API_KEY = 'b5112256c1f3ebc24160b9ef6d0b67b2';
         const orderId = Date.now().toString();
         const nonce = Date.now();
 
