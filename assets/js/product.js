@@ -157,18 +157,45 @@ function updateTotal() {
     document.getElementById('total-price').textContent = `${total} ₽`;
 }
 
+// Toast notification system
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    const icons = {
+        success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>',
+        error: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>',
+        info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>'
+    };
+    
+    toast.innerHTML = `${icons[type] || icons.info}<span>${message}</span>`;
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'toastOut 0.4s ease forwards';
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+}
+
 // Purchase function via FreeKassa API
 async function purchase() {
     if (!currentProduct) return;
     
-    // Запрашиваем никнейм
-    const nickname = prompt('Введите ваш никнейм на сервере:');
-    if (!nickname || nickname.trim() === '') {
-        alert('Никнейм обязателен для покупки!');
+    const nicknameInput = document.getElementById('nickname');
+    const nickname = nicknameInput.value.trim();
+    
+    if (!nickname) {
+        nicknameInput.classList.add('error');
+        showToast('Введите никнейм на сервере!', 'error');
+        nicknameInput.focus();
+        setTimeout(() => nicknameInput.classList.remove('error'), 400);
         return;
     }
     
     const promoCode = document.getElementById('promo-code').value.trim();
+    
+    showToast('Создаём платёж...', 'info');
     
     try {
         const response = await fetch('/api/create-payment', {
@@ -180,23 +207,23 @@ async function purchase() {
                 price: currentProduct.price,
                 quantity: currentQuantity,
                 promoCode: promoCode,
-                nickname: nickname.trim()
+                nickname: nickname
             })
         });
         
         const data = await response.json();
         
         if (data.success && data.paymentUrl) {
-            window.location.href = data.paymentUrl;
+            showToast('Перенаправляем на оплату...', 'success');
+            setTimeout(() => {
+                window.location.href = data.paymentUrl;
+            }, 500);
         } else {
-            alert('Ошибка создания платежа. Попробуйте позже.');
+            showToast(data.error || 'Ошибка создания платежа', 'error');
         }
     } catch (error) {
         console.error('Payment error:', error);
-        // Fallback - простой редирект на FreeKassa без подписи
-        const total = Math.round(currentProduct.price * currentQuantity * (1 - promoDiscount / 100));
-        const url = `https://pay.freekassa.com/?m=69001&oa=${total}&currency=RUB&o=${Date.now()}&us_nickname=${encodeURIComponent(nickname)}&us_product=${currentProduct.id}`;
-        window.location.href = url;
+        showToast('Ошибка соединения. Попробуйте позже.', 'error');
     }
 }
 
