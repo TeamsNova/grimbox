@@ -94,29 +94,50 @@ document.getElementById('quantity')?.addEventListener('change', function() {
     updateTotal();
 });
 
-// Apply promo code
-function applyPromo() {
-    const code = document.getElementById('promo-code').value.trim().toUpperCase();
+// Apply promo code via API
+async function applyPromo() {
+    const code = document.getElementById('promo-code').value.trim();
     const messageEl = document.getElementById('promo-message');
     
-    // Example promo codes (you can customize these)
-    const promoCodes = {
-        'GRIMBOX10': 10,
-        'WINTER20': 20,
-        'NEWYEAR': 15
-    };
-    
-    if (promoCodes[code]) {
-        promoDiscount = promoCodes[code];
-        messageEl.textContent = `Промокод применён! Скидка ${promoDiscount}%`;
-        messageEl.className = 'promo-message success';
-    } else if (code === '') {
+    if (!code) {
         messageEl.textContent = '';
         promoDiscount = 0;
-    } else {
-        messageEl.textContent = 'Промокод не найден';
-        messageEl.className = 'promo-message error';
-        promoDiscount = 0;
+        updateTotal();
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/check-promo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ promoCode: code })
+        });
+        
+        const data = await response.json();
+        
+        if (data.valid) {
+            promoDiscount = data.discount;
+            messageEl.textContent = data.message;
+            messageEl.className = 'promo-message success';
+        } else {
+            promoDiscount = 0;
+            messageEl.textContent = data.error;
+            messageEl.className = 'promo-message error';
+        }
+    } catch (error) {
+        // Fallback to local promo codes if API fails
+        const promoCodes = { 'OPEN15': 15 };
+        const upperCode = code.toUpperCase();
+        
+        if (promoCodes[upperCode]) {
+            promoDiscount = promoCodes[upperCode];
+            messageEl.textContent = `Скидка ${promoDiscount}% применена!`;
+            messageEl.className = 'promo-message success';
+        } else {
+            promoDiscount = 0;
+            messageEl.textContent = 'Промокод не найден';
+            messageEl.className = 'promo-message error';
+        }
     }
     
     updateTotal();
@@ -136,9 +157,47 @@ function updateTotal() {
     document.getElementById('total-price').textContent = `${total} ₽`;
 }
 
-// Purchase function
-function purchase() {
-    window.open('https://yoomoney.ru/to/4100116509999561', '_blank');
+// Purchase function via FreeKassa API
+async function purchase() {
+    if (!currentProduct) return;
+    
+    // Запрашиваем никнейм
+    const nickname = prompt('Введите ваш никнейм на сервере:');
+    if (!nickname || nickname.trim() === '') {
+        alert('Никнейм обязателен для покупки!');
+        return;
+    }
+    
+    const promoCode = document.getElementById('promo-code').value.trim();
+    
+    try {
+        const response = await fetch('/api/create-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                productId: currentProduct.id,
+                productName: currentProduct.name,
+                price: currentProduct.price,
+                quantity: currentQuantity,
+                promoCode: promoCode,
+                nickname: nickname.trim()
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.paymentUrl) {
+            window.location.href = data.paymentUrl;
+        } else {
+            alert('Ошибка создания платежа. Попробуйте позже.');
+        }
+    } catch (error) {
+        console.error('Payment error:', error);
+        // Fallback - простой редирект на FreeKassa без подписи
+        const total = Math.round(currentProduct.price * currentQuantity * (1 - promoDiscount / 100));
+        const url = `https://pay.freekassa.com/?m=69001&oa=${total}&currency=RUB&o=${Date.now()}&us_nickname=${encodeURIComponent(nickname)}&us_product=${currentProduct.id}`;
+        window.location.href = url;
+    }
 }
 
 // Snow Effect
