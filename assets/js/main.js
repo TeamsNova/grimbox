@@ -15,10 +15,13 @@ const products = [
     { id: 9, name: "Кейс с Донатом", desc: "Виртуальный набор с случайным содержимым", price: 79, oldPrice: null, category: "keys", image: "./assets/images/keys/donate.png" },
     { id: 10, name: "Кейс с Супер Донатом", desc: "Виртуальный набор с улучшенным содержимым", price: 209, oldPrice: null, category: "keys", image: "./assets/images/keys/superdonate.png" },
     { id: 11, name: "Кейс с Гримами", desc: "Виртуальный набор с гарантированным содержимым", price: 104, oldPrice: 149, category: "keys", image: "./assets/images/keys/grimkeys.png" },
-    { id: 12, name: "Кейс Всё или Ничего", desc: "Виртуальный набор с повышенной ценностью", price: 90, oldPrice: 129, category: "keys", image: "./assets/images/keys/all or nothing.png" },
+    { id: 12, name: "Кейс Всё или Ничего", desc: "Виртуальный набор с повышенной ценностью", price: 30, oldPrice: 69, category: "keys", image: "./assets/images/keys/all or nothing.png" },
+    { id: 15, name: "Кейс с Китами", desc: "Виртуальный набор с китовым содержимым", price: 69, oldPrice: 119, category: "keys", image: "./assets/images/keys/kits.png" },
     // Виртуальные товары
     { id: 13, name: "Игровая валюта", desc: "Виртуальная валюта для использования на сервере", price: 1, oldPrice: null, category: "other", image: "./assets/images/other/grims.png" },
-    { id: 14, name: "Кейс с Титулами", desc: "Виртуальный набор с именными префиксами", price: 39, oldPrice: null, category: "other", image: "./assets/images/keys/tituls.png" }
+    { id: 14, name: "Кейс с Титулами", desc: "Виртуальный набор с именными префиксами", price: 39, oldPrice: null, category: "other", image: "./assets/images/keys/tituls.png" },
+    { id: 16, name: "Разбан", desc: "Снятие бана с аккаунта на сервере", price: 83, oldPrice: 119, category: "other", image: "./assets/images/other/unban.png" },
+    { id: 17, name: "Размут", desc: "Снятие мута с аккаунта на сервере", price: 34, oldPrice: 49, category: "other", image: "./assets/images/other/unmute.png" }
 ];
 
 // Render products with animation delay
