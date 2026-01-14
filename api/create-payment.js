@@ -31,7 +31,7 @@ export default function handler(req, res) {
         const signString = MERCHANT_ID + ':' + finalPrice + ':' + SECRET_KEY_1 + ':' + currency + ':' + orderId;
         const sign = crypto.createHash('md5').update(signString).digest('hex');
 
-        const paymentUrl = 'https://pay.freekassa.com/?m=' + MERCHANT_ID + '&oa=' + finalPrice + '&currency=' + currency + '&o=' + orderId + '&s=' + sign + '&i=6&us_nickname=' + encodeURIComponent(nickname) + '&us_product=' + productId + '&lang=ru';
+        const paymentUrl = 'https://pay.freekassa.com/?m=' + MERCHANT_ID + '&oa=' + finalPrice + '&currency=' + currency + '&o=' + orderId + '&s=' + sign + '&i=4&us_nickname=' + encodeURIComponent(nickname) + '&us_product=' + productId + '&lang=ru';
 
         return res.status(200).json({ success: true, paymentUrl, orderId, finalPrice, discount, originalPrice: price * quantity });
     } catch (error) {
