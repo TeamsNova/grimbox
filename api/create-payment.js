@@ -32,7 +32,7 @@ export default async function handler(req, res) {
             amount: finalPrice,
             currency: 'RUB',
             email: 'customer@grimbox.pw',
-            i: 36,
+            i: 4,
             ip: clientIp,
             nonce: nonce,
             paymentId: orderId,
@@ -67,9 +67,8 @@ export default async function handler(req, res) {
             });
         } else {
             return res.status(400).json({
-                error: apiData.msg || apiData.message || 'Payment creation failed',
-                details: apiData,
-                debug: { signString, signature, requestBody }
+                error: apiData.msg || apiData.message || apiData.error || 'Payment creation failed',
+                details: apiData
             });
         }
     } catch (error) {
